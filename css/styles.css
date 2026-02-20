@@ -1,0 +1,366 @@
+/*
+  css/styles.css
+
+  Extracted from index.html to improve readability and maintainability.
+  This file contains the design tokens (CSS variables), component styles,
+  and utility classes used across the site. Comments retained to serve
+  as an editable blueprint.
+*/
+
+/*
+  CSS Overview (tutorial):
+
+  Design tokens & theming:
+  - The `:root` block contains CSS custom properties (variables) used
+    across the stylesheet. They are the single source of truth for
+    colors and help implement theming (light/dark or branded colors).
+  - Example workflow: set your palette in `:root`, then reference
+    `var(--pink)` or `var(--teal)` throughout. To invert or theme, you
+    can override `:root` variables in a `.theme-light` or
+    `.theme-dark` container.
+
+  Organization & scalability:
+  - This stylesheet is organized by component and section. When your
+    site grows, split into partials and import them via a preprocessor
+    or bundler.
+
+  Performance notes:
+  - Keep critical above-the-fold styles small. Use external CSS for the
+    majority of styles to enable caching.
+
+  Accessibility:
+  - Respect `prefers-reduced-motion` for users who opt out of motion.
+*/
+
+:root {
+  --bg: #0f0e17;
+  --surface: #1a1825;
+  --text: #fffffe;
+  --muted: #a7a9be;
+  --pink: #ff6b9d;
+  --orange: #ff8c42;
+  --yellow: #ffe66d;
+  --teal: #4ecdc4;
+  --purple: #c77dff;
+  --green: #06d6a0;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/*
+  Custom cursor (visual enhancement)
+
+  - What it does: replaces the native mouse pointer with a small
+    dot and a trailing ring for a modern, interactive feel.
+  - Accessibility: custom cursors can confuse keyboard users or
+    screen reader users. Provide fallbacks (set `cursor: auto` on
+    important interactive elements) or allow users to disable the
+    effect via a `data-prefer-reduced-motion` attribute.
+*/
+.cursor {
+  width: 12px; height: 12px;
+  background: var(--pink);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s ease, background 0.2s;
+  mix-blend-mode: screen;
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1px solid var(--pink);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transition: transform 0.18s ease, border-color 0.2s;
+  mix-blend-mode: screen;
+  transform: translate(-12px, -12px);
+}
+
+/* Floating blobs background (decorative)
+
+   - Purpose: adds subtle colorful shapes to the background using
+     blurred circles and gentle keyframe motion. This is purely
+     decorative and should not interfere with content readability.
+   - Accessibility: ensure enough contrast between content and the
+     foreground; keep opacity low to avoid text legibility issues.
+   - Performance: blurred, large elements can be GPU-heavy on low-end
+     devices. Consider disabling these effects on mobile with a media
+     query or `prefers-reduced-data`.
+*/
+.blobs {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.18;
+  animation: blobFloat 12s ease-in-out infinite;
+}
+.blob1 { width: 500px; height: 500px; background: var(--pink); top: -100px; left: -100px; animation-delay: 0s; }
+.blob2 { width: 400px; height: 400px; background: var(--teal); bottom: -100px; right: 10%; animation-delay: -4s; }
+.blob3 { width: 350px; height: 350px; background: var(--purple); top: 40%; left: 60%; animation-delay: -8s; }
+.blob4 { width: 300px; height: 300px; background: var(--yellow); bottom: 20%; left: 20%; animation-delay: -2s; }
+
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+/* Navigation bar
+
+   - `nav` is positioned fixed to keep links accessible at the top.
+   - The `.nav-logo` uses a display font for branding — consider
+     swapping it with an SVG logo for better scaling and crispness.
+   - Keep link text simple and ensure keyboard focus styles are visible
+     (outline or underline). You may want to add `:focus-visible` styles
+     for accessibility.
+*/
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1.2rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(12px);
+  background: rgba(15,14,23,0.7);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  background: linear-gradient(90deg, var(--pink), var(--orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
+}
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0; right: 0;
+  height: 1px;
+  background: var(--pink);
+  transform: scaleX(0);
+  transition: transform 0.25s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+/* Sections: page layout scope
+
+   - Each `section` uses padding to create whitespace and a `max-width`
+     to center content. This is a simple content container pattern.
+   - For multi-page sites, consider creating a `main` element and
+     reserving sections for semantic sections of that page.
+*/
+section {
+  position: relative;
+  z-index: 1;
+  padding: 6rem 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Hero section styles
+
+   - The hero should be concise: a strong title, a short descriptor,
+     and a single clear call-to-action (CTA). Large headings are set
+     with a display font and responsive `clamp()` sizing for balance.
+   - Keep decorative spans (`.accent-*`) for visual rhythm but avoid
+     overusing color for semantic meaning.
+*/
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 6rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.hero-tag {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s forwards;
+}
+.hero-title span { display: block; }
+.hero-title .accent-pink { color: var(--pink); }
+.hero-title .accent-yellow { color: var(--yellow); -webkit-text-stroke: 0px; }
+.hero-title .hollow { -webkit-text-stroke: 2px var(--text); color: transparent; }
+
+.hero-desc {
+  max-width: 480px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  margin-bottom: 3rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+
+.hero-scroll {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0;
+  animation: fadeUp 0.8s 1s forwards;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.scroll-line { width: 40px; height: 1px; background: var(--muted); animation: scrollPulse 2s ease-in-out infinite; }
+@keyframes scrollPulse { 0%, 100% { width: 40px; } 50% { width: 70px; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Section headers
+
+   - This pattern combines a small numeric label and a large section
+     title. It's useful for portfolio sites with multiple vertical
+     sections. If you prefer a simpler layout, remove `.section-num`.
+*/
+.section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 3.5rem; }
+.section-num { font-size: 0.7rem; letter-spacing: 0.15em; color: var(--muted); padding-top: 0.2rem; }
+.section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; line-height: 1; letter-spacing: -0.02em; }
+
+/* Cards grid (projects, items)
+
+   - Grid uses `auto-fill` with `minmax` to be responsive and flow
+     naturally across viewport sizes. To control density, change the
+     `minmax` min value (e.g., 220px).
+   - Cards have a hover accent bar; that uses a CSS variable
+     `--card-accent` so each card can be tinted individually.
+*/
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+.card { background: var(--surface); border-radius: 16px; padding: 1.75rem; border: 1px solid rgba(255,255,255,0.06); transition: transform 0.25s ease, border-color 0.25s; position: relative; overflow: hidden; }
+.card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--card-accent, var(--pink)); transform: scaleX(0); transition: transform 0.3s ease; }
+.card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.12); }
+.card:hover::before { transform: scaleX(1); }
+.card-icon { font-size: 1.8rem; margin-bottom: 1rem; display: block; }
+.card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+.card-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.25rem; }
+.card-tag { display: inline-block; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 100px; background: rgba(255,255,255,0.07); color: var(--muted); margin-right: 0.4rem; margin-bottom: 0.4rem; }
+.card-link { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--card-accent, var(--pink)); text-decoration: none; margin-top: 1rem; transition: gap 0.2s; }
+.card-link:hover { gap: 0.7rem; }
+
+/* Books list
+
+   - Small, repeatable items with a colored spine accent. Good for
+     lightweight lists; for larger datasets consider generating these
+     server-side or with a templating system.
+*/
+.books-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.book-item { background: var(--surface); border-radius: 12px; padding: 1.25rem 1.5rem; border: 1px solid rgba(255,255,255,0.06); transition: transform 0.2s, border-color 0.2s; display: flex; gap: 1rem; align-items: flex-start; }
+.book-item:hover { transform: translateX(4px); border-color: rgba(255,255,255,0.12); }
+.book-spine { width: 4px; border-radius: 2px; background: var(--book-color, var(--teal)); flex-shrink: 0; align-self: stretch; min-height: 40px; }
+.book-title { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; font-style: italic; margin-bottom: 0.2rem; }
+.book-author { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.05em; }
+
+/* Stories grid
+
+   - Designed for excerpts with a left quote-style border. Use an
+     external article page or modal for the full text if needed.
+*/
+.stories-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+.story-card { background: var(--surface); border-radius: 16px; padding: 2rem; border: 1px solid rgba(255,255,255,0.06); transition: transform 0.25s; position: relative; }
+.story-card:hover { transform: translateY(-4px); }
+.story-genre { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--purple); margin-bottom: 0.75rem; }
+.story-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.75rem; line-height: 1.2; }
+.story-excerpt { font-family: 'Libre Baskerville', serif; font-size: 0.82rem; font-style: italic; color: var(--muted); line-height: 1.8; border-left: 2px solid var(--purple); padding-left: 1rem; }
+.story-meta { margin-top: 1.25rem; font-size: 0.7rem; color: var(--muted); display: flex; justify-content: space-between; }
+
+/* Channels (external links)
+
+   - These cards link to external streaming platforms. Use
+     `rel="noopener noreferrer"` on external links if opened in a
+     new tab to improve security and privacy.
+*/
+.channels-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 600px) { .channels-wrap { grid-template-columns: 1fr; } }
+.channel-card { border-radius: 20px; padding: 2.5rem 2rem; position: relative; overflow: hidden; transition: transform 0.25s; text-decoration: none; display: block; color: var(--text); }
+.channel-card:hover { transform: scale(1.02); }
+.channel-card.youtube { background: linear-gradient(135deg, #ff3c3c22, #ff3c3c08); border: 1px solid #ff3c3c44; }
+.channel-card.twitch { background: linear-gradient(135deg, #9146ff22, #9146ff08); border: 1px solid #9146ff44; }
+.channel-bg-icon { position: absolute; right: -20px; bottom: -20px; font-size: 8rem; opacity: 0.06; pointer-events: none; }
+.channel-platform { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.75rem; }
+.channel-card.youtube .channel-platform { color: #ff6b6b; }
+.channel-card.twitch .channel-platform { color: #a970ff; }
+.channel-name { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; margin-bottom: 0.5rem; }
+.channel-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.7; max-width: 260px; }
+.channel-cta { margin-top: 1.5rem; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 500; }
+.channel-card.youtube .channel-cta { color: #ff6b6b; }
+.channel-card.twitch .channel-cta { color: #a970ff; }
+
+/* Divider line
+
+   - Simple visual separator between sections. Can be enhanced with
+     SVG or gradient strokes for a more custom look.
+*/
+.divider { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 2.5rem; border: none; border-top: 1px solid rgba(255,255,255,0.06); }
+
+/* Footer
+
+   - Keep footer content minimal and useful: contact links, copyright,
+     and legal links. Consider adding a `sitemap.xml` and `robots.txt`
+     for crawlers when the site is public.
+*/
+footer { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 3rem 2.5rem; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 0.75rem; }
+.footer-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; background: linear-gradient(90deg, var(--pink), var(--orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* Scroll reveal utility
+
+   - `.reveal` + `.visible` pair works with the IntersectionObserver in
+     the script to animate elements into view.
+   - If you want to remove JS entirely, you can rely on CSS `:target`
+     or pure CSS animations, but IntersectionObserver gives better
+     control and performance.
+*/
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 768px) { nav { padding: 1rem 1.5rem; } .nav-links { gap: 1.2rem; } section { padding: 4rem 1.5rem; } }
+
+/* End of css/styles.css */

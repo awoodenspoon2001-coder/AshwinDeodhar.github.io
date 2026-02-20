@@ -1,498 +1,115 @@
 <!DOCTYPE html>
+<!--
+  index.html — Creative portfolio template
+
+  Structure:
+  - <head>: metadata, fonts, and inline styles
+  - <style>: CSS variables and component styles
+  - <body>: visible layout (blobs, nav, sections, footer)
+  - <script>: interactive bits (custom cursor, reveal)
+
+  Quick customization:
+  - Change theme colors in the `:root` CSS variables near the top of the <style> block.
+  - Replace placeholder text like "Your Name" and project/book/story entries.
+  - Duplicate `.card`, `.book-item`, or `.story-card` blocks to add items.
+  - Update any `href="#"` values to actual URLs.
+-->
 <html lang="en">
 <head>
+  <!--
+    BLUEPRINT: Project structure & workflow (detailed)
+
+    This HTML file is a single-file prototype intended as a starting
+    blueprint. When you move from prototype -> production, here's a
+    suggested project layout and why each file matters:
+
+    - index.html
+      The main entry point (this file). Keep semantic structure, meta
+      tags for social/SEO, and minimal inline critical CSS if needed.
+
+    - /css/styles.css (or /css/main.css)
+      Move the large <style> block here for maintainability. Use a
+      preprocessor like Sass (`.scss`) only if you need variables,
+      nesting, or partials. For small sites, plain CSS + variables is
+      simple and performant.
+
+    - /js/main.js (or /js/app.js)
+      Move interactive code out of inline `<script>` tags. This keeps
+      content clean and enables bundling, caching, and TypeScript.
+
+    - /assets/ (images, fonts, icons)
+      Organize static assets (SVGs, images, favicons) to improve caching
+      and to simplify references.
+
+    - package.json (optional)
+      If you introduce build tooling (bundlers, linters, formatters),
+      use `npm` or `pnpm` with scripts for building, linting, and
+      deploying.
+
+    - README.md
+      Document how to run the dev server, build, and deploy the site.
+
+    Deployment options:
+    - GitHub Pages: simple, free for static sites (push to `gh-pages`
+      branch or use repo settings).
+    - Static hosts: Netlify, Vercel, Cloudflare Pages — support CI and
+      modern workflows.
+
+    Accessibility, performance, and SEO (high-level checklist):
+    - Ensure semantic elements (`nav`, `main`, `header`, `footer`) and
+      ARIA only when necessary.
+    - Keep the initial critical CSS small; lazy-load non-critical CSS
+      and JS where possible.
+    - Add `alt` attributes for images and use `rel="noopener"` on
+      external links opened with `target="_blank"`.
+    - Add basic meta tags: `description`, Open Graph (`og:*`) and
+      `twitter:*` for sharing previews.
+
+    Workflow tips:
+    - Work locally with a simple dev server (e.g., `live-server` or
+      `vite`) so you get fast reloads.
+    - Use source control (git) and commit small, descriptive changes.
+    - Add linting (`eslint`, `stylelint`) and formatting (`prettier`) if
+      you collaborate or want consistent style.
+  -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Creative Portfolio</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@300;400;500&family=Libre+Baskerville:ital@0;1&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0f0e17;
-    --surface: #1a1825;
-    --text: #fffffe;
-    --muted: #a7a9be;
-    --pink: #ff6b9d;
-    --orange: #ff8c42;
-    --yellow: #ffe66d;
-    --teal: #4ecdc4;
-    --purple: #c77dff;
-    --green: #06d6a0;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    overflow-x: hidden;
-    cursor: none;
-  }
-
-  /* Custom cursor */
-  .cursor {
-    width: 12px; height: 12px;
-    background: var(--pink);
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    transition: transform 0.1s ease, background 0.2s;
-    mix-blend-mode: screen;
-  }
-  .cursor-ring {
-    width: 36px; height: 36px;
-    border: 1px solid var(--pink);
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9998;
-    transition: transform 0.18s ease, border-color 0.2s;
-    mix-blend-mode: screen;
-    transform: translate(-12px, -12px);
-  }
-
-  /* Floating blobs background */
-  .blobs {
-    position: fixed; inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.18;
-    animation: blobFloat 12s ease-in-out infinite;
-  }
-  .blob1 { width: 500px; height: 500px; background: var(--pink); top: -100px; left: -100px; animation-delay: 0s; }
-  .blob2 { width: 400px; height: 400px; background: var(--teal); bottom: -100px; right: 10%; animation-delay: -4s; }
-  .blob3 { width: 350px; height: 350px; background: var(--purple); top: 40%; left: 60%; animation-delay: -8s; }
-  .blob4 { width: 300px; height: 300px; background: var(--yellow); bottom: 20%; left: 20%; animation-delay: -2s; }
-
-  @keyframes blobFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(40px, -30px) scale(1.05); }
-    66% { transform: translate(-20px, 20px) scale(0.95); }
-  }
-
-  /* Nav */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0;
-    z-index: 100;
-    padding: 1.2rem 2.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    backdrop-filter: blur(12px);
-    background: rgba(15,14,23,0.7);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-  }
-  .nav-logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    font-weight: 900;
-    background: linear-gradient(90deg, var(--pink), var(--orange));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -0.02em;
-  }
-  .nav-links { display: flex; gap: 2rem; }
-  .nav-links a {
-    text-decoration: none;
-    color: var(--muted);
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    transition: color 0.2s;
-    position: relative;
-  }
-  .nav-links a::after {
-    content: '';
-    position: absolute;
-    bottom: -3px; left: 0; right: 0;
-    height: 1px;
-    background: var(--pink);
-    transform: scaleX(0);
-    transition: transform 0.25s;
-  }
-  .nav-links a:hover { color: var(--text); }
-  .nav-links a:hover::after { transform: scaleX(1); }
-
-  /* Sections */
-  section {
-    position: relative;
-    z-index: 1;
-    padding: 6rem 2.5rem;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
-  /* Hero */
-  #hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-top: 6rem;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-  .hero-tag {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--teal);
-    margin-bottom: 1.5rem;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.2s forwards;
-  }
-  .hero-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(3.5rem, 8vw, 7rem);
-    font-weight: 900;
-    line-height: 0.95;
-    letter-spacing: -0.03em;
-    margin-bottom: 2rem;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.4s forwards;
-  }
-  .hero-title span {
-    display: block;
-  }
-  .hero-title .accent-pink { color: var(--pink); }
-  .hero-title .accent-yellow { color: var(--yellow); -webkit-text-stroke: 0px; }
-  .hero-title .hollow {
-    -webkit-text-stroke: 2px var(--text);
-    color: transparent;
-  }
-
-  .hero-desc {
-    max-width: 480px;
-    color: var(--muted);
-    font-size: 0.9rem;
-    line-height: 1.8;
-    margin-bottom: 3rem;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.6s forwards;
-  }
-
-  .hero-scroll {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    opacity: 0;
-    animation: fadeUp 0.8s 1s forwards;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .scroll-line {
-    width: 40px; height: 1px;
-    background: var(--muted);
-    animation: scrollPulse 2s ease-in-out infinite;
-  }
-  @keyframes scrollPulse {
-    0%, 100% { width: 40px; }
-    50% { width: 70px; }
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Section headers */
-  .section-header {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    margin-bottom: 3.5rem;
-  }
-  .section-num {
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    padding-top: 0.2rem;
-  }
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 900;
-    line-height: 1;
-    letter-spacing: -0.02em;
-  }
-
-  /* Cards grid */
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .card {
-    background: var(--surface);
-    border-radius: 16px;
-    padding: 1.75rem;
-    border: 1px solid rgba(255,255,255,0.06);
-    transition: transform 0.25s ease, border-color 0.25s;
-    position: relative;
-    overflow: hidden;
-  }
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--card-accent, var(--pink));
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-  }
-  .card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.12); }
-  .card:hover::before { transform: scaleX(1); }
-
-  .card-icon {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    display: block;
-  }
-  .card-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-  }
-  .card-desc {
-    font-size: 0.78rem;
-    color: var(--muted);
-    line-height: 1.7;
-    margin-bottom: 1.25rem;
-  }
-  .card-tag {
-    display: inline-block;
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.25rem 0.6rem;
-    border-radius: 100px;
-    background: rgba(255,255,255,0.07);
-    color: var(--muted);
-    margin-right: 0.4rem;
-    margin-bottom: 0.4rem;
-  }
-  .card-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.75rem;
-    color: var(--card-accent, var(--pink));
-    text-decoration: none;
-    margin-top: 1rem;
-    transition: gap 0.2s;
-  }
-  .card-link:hover { gap: 0.7rem; }
-
-  /* Books */
-  .books-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem;
-  }
-  .book-item {
-    background: var(--surface);
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem;
-    border: 1px solid rgba(255,255,255,0.06);
-    transition: transform 0.2s, border-color 0.2s;
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
-  }
-  .book-item:hover { transform: translateX(4px); border-color: rgba(255,255,255,0.12); }
-  .book-spine {
-    width: 4px;
-    border-radius: 2px;
-    background: var(--book-color, var(--teal));
-    flex-shrink: 0;
-    align-self: stretch;
-    min-height: 40px;
-  }
-  .book-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    font-style: italic;
-    margin-bottom: 0.2rem;
-  }
-  .book-author {
-    font-size: 0.7rem;
-    color: var(--muted);
-    letter-spacing: 0.05em;
-  }
-
-  /* Stories */
-  .stories-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-  .story-card {
-    background: var(--surface);
-    border-radius: 16px;
-    padding: 2rem;
-    border: 1px solid rgba(255,255,255,0.06);
-    transition: transform 0.25s;
-    position: relative;
-  }
-  .story-card:hover { transform: translateY(-4px); }
-  .story-genre {
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--purple);
-    margin-bottom: 0.75rem;
-  }
-  .story-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    line-height: 1.2;
-  }
-  .story-excerpt {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 0.82rem;
-    font-style: italic;
-    color: var(--muted);
-    line-height: 1.8;
-    border-left: 2px solid var(--purple);
-    padding-left: 1rem;
-  }
-  .story-meta {
-    margin-top: 1.25rem;
-    font-size: 0.7rem;
-    color: var(--muted);
-    display: flex;
-    justify-content: space-between;
-  }
-
-  /* Channels */
-  .channels-wrap {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-  }
-  @media (max-width: 600px) { .channels-wrap { grid-template-columns: 1fr; } }
-
-  .channel-card {
-    border-radius: 20px;
-    padding: 2.5rem 2rem;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.25s;
-    text-decoration: none;
-    display: block;
-    color: var(--text);
-  }
-  .channel-card:hover { transform: scale(1.02); }
-  .channel-card.youtube { background: linear-gradient(135deg, #ff3c3c22, #ff3c3c08); border: 1px solid #ff3c3c44; }
-  .channel-card.twitch { background: linear-gradient(135deg, #9146ff22, #9146ff08); border: 1px solid #9146ff44; }
-  .channel-bg-icon {
-    position: absolute;
-    right: -20px; bottom: -20px;
-    font-size: 8rem;
-    opacity: 0.06;
-    pointer-events: none;
-  }
-  .channel-platform {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-  }
-  .channel-card.youtube .channel-platform { color: #ff6b6b; }
-  .channel-card.twitch .channel-platform { color: #a970ff; }
-  .channel-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    font-weight: 900;
-    margin-bottom: 0.5rem;
-  }
-  .channel-desc {
-    font-size: 0.8rem;
-    color: var(--muted);
-    line-height: 1.7;
-    max-width: 260px;
-  }
-  .channel-cta {
-    margin-top: 1.5rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    font-weight: 500;
-  }
-  .channel-card.youtube .channel-cta { color: #ff6b6b; }
-  .channel-card.twitch .channel-cta { color: #a970ff; }
-
-  /* Divider */
-  .divider {
-    position: relative; z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 2.5rem;
-    border: none;
-    border-top: 1px solid rgba(255,255,255,0.06);
-  }
-
-  /* Footer */
-  footer {
-    position: relative; z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 3rem 2.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--muted);
-    font-size: 0.75rem;
-  }
-  .footer-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1rem;
-    font-weight: 700;
-    background: linear-gradient(90deg, var(--pink), var(--orange));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  /* Scroll reveal */
-  .reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-  }
-  .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  @media (max-width: 768px) {
-    nav { padding: 1rem 1.5rem; }
-    .nav-links { gap: 1.2rem; }
-    section { padding: 4rem 1.5rem; }
-  }
-</style>
+<!-- Styles moved to external file for maintainability -->
+<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
+  <!--
+    BODY CONTENT OVERVIEW
+
+    Structure inside <body> (high-level):
+    - Decorative/UX elements: `.cursor`, `.cursor-ring`, and `.blobs`.
+      These are visually appealing but optional. You can remove them
+      if you prefer a more minimal site or to improve performance on
+      low-end devices.
+    - `nav`: global site navigation. Keep links semantic and keyboard
+      accessible.
+    - Series of `<section id="...">`: each major content area (hero,
+      projects, books, writing, channels). `id`s enable anchor links and
+      improve accessibility and shareability.
+    - `hr.divider` lines: simple separators; you can replace these
+      with CSS borders or SVG dividers for enhanced visuals.
+    - `footer`: persistent site footer for author info and small links.
+
+    Content strategy notes:
+    - Each section should start with an H2 (or H1 only once on the
+      page) for clear document outline used by screen readers and SEO.
+    - Keep copy concise: headings -> 1-sentence subheading -> link to
+      more. Users skim; short punchy text works best.
+    - When the site grows, consider moving repeated components into
+      server-side includes, templates (Jekyll, Eleventy), or a
+      component-based framework (React/Vue) depending on your needs.
+  -->
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
 
 <div class="blobs">
   <div class="blob blob1"></div>
@@ -511,7 +128,15 @@
   </div>
 </nav>
 
-<!-- Hero -->
+<!--
+  HERO SECTION — Main landing area / first impression
+  - `#hero` contains: `.hero-tag`, `.hero-title`, `.hero-desc`, and `.hero-scroll`.
+  - Customize the large headings and accent spans to reflect your personal brand.
+  - Keep the `min-height: 100vh` so the hero fills the first viewport on load.
+  - The reveal animations use the `.reveal`/`.visible` classes and the
+    IntersectionObserver defined in the script at the bottom of the file.
+  - Tip: shorten the hero text for a sharper visual impact on mobile devices.
+-->
 <section id="hero">
   <p class="hero-tag">✦ Creative portfolio</p>
   <h1 class="hero-title">
@@ -530,7 +155,15 @@
 
 <hr class="divider">
 
-<!-- Projects -->
+<!--
+  PROJECTS SECTION — Showcase your code and products
+  - `#projects` contains a `.cards-grid` of `.card` elements.
+  - To add a new project: duplicate one `.card` block, update the title,
+    description, tags, and the link `href` to point to your repo/demo.
+  - Use the inline `style="--card-accent: ..."` to set a per-card accent color.
+  - Keep project descriptions short (1–2 sentences) and link to a README
+    or demo for details.
+-->
 <section id="projects">
   <div class="section-header reveal">
     <span class="section-num">01 —</span>
@@ -572,7 +205,14 @@
 
 <hr class="divider">
 
-<!-- Books -->
+<!--
+  BOOKS SECTION — a reading list or recommendations
+  - `#books` contains `.books-list` with `.book-item` entries.
+  - Each `.book-item` uses `--book-color` to tint the small spine accent.
+  - Replace titles/authors with your favorites; you can link these to
+    your Goodreads or a notes page if you wish.
+  - To reorder: cut and paste `.book-item` blocks; to add more, duplicate.
+-->
 <section id="books">
   <div class="section-header reveal">
     <span class="section-num">02 —</span>
@@ -640,7 +280,13 @@
 
 <hr class="divider">
 
-<!-- Writing -->
+<!--
+  WRITING SECTION — essays, short fiction, or excerpts
+  - `#writing` holds `.stories-grid` containing `.story-card` entries.
+  - Each `.story-card` shows a genre, title, short excerpt, and meta info.
+  - Link story titles to full posts or external docs when you publish them.
+  - Duplicate `.story-card` blocks to add new pieces.
+-->
 <section id="writing">
   <div class="section-header reveal">
     <span class="section-num">03 —</span>
@@ -679,7 +325,14 @@
 
 <hr class="divider">
 
-<!-- Channels -->
+<!--
+  CHANNELS SECTION — where to find live or recorded content
+  - `#channels` includes `.channel-card` blocks like YouTube/Twitch.
+  - Update the `href` attributes to point to your actual channel URLs.
+  - Customize `.channel-desc` text to explain what you stream or post.
+  - The large faint platform symbol (`.channel-bg-icon`) is decorative;
+    change or remove it as desired.
+-->
 <section id="channels">
   <div class="section-header reveal">
     <span class="section-num">04 —</span>
@@ -710,50 +363,7 @@
   <div>Crafted with curiosity ✦ 2025</div>
 </footer>
 
-<script>
-  // Custom cursor
-  const cursor = document.getElementById('cursor');
-  const ring = document.getElementById('cursorRing');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-
-  document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
-    cursor.style.left = mx - 6 + 'px';
-    cursor.style.top = my - 6 + 'px';
-  });
-
-  function animateRing() {
-    rx += (mx - rx - 18) * 0.12;
-    ry += (my - ry - 18) * 0.12;
-    ring.style.left = rx + 'px';
-    ring.style.top = ry + 'px';
-    requestAnimationFrame(animateRing);
-  }
-  animateRing();
-
-  document.querySelectorAll('a, .card, .book-item, .story-card, .channel-card').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cursor.style.transform = 'scale(2)';
-      ring.style.transform = 'translate(-12px,-12px) scale(1.5)';
-      ring.style.borderColor = 'var(--teal)';
-    });
-    el.addEventListener('mouseleave', () => {
-      cursor.style.transform = 'scale(1)';
-      ring.style.transform = 'translate(-12px,-12px) scale(1)';
-      ring.style.borderColor = 'var(--pink)';
-    });
-  });
-
-  // Scroll reveal
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), i * 80);
-      }
-    });
-  }, { threshold: 0.1 });
-  reveals.forEach(el => observer.observe(el));
-</script>
+<!-- Interactive behavior moved to external file for clarity -->
+<script src="js/main.js" defer></script>
 </body>
 </html>
